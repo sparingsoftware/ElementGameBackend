@@ -55,10 +55,10 @@ class ScoreRepo {
 
 	//
 
-	static userScore (userScore=370) {
+	static userScore ({ user, userScore=370 }) {
 		return new Promise((resolve, reject) => {
 			const score = {
-				user: 'User',
+				user: user,
 				score: userScore,
 				ranking: '9'
 			}

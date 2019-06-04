@@ -37,9 +37,10 @@ module.exports = class ScoreController {
 	// return top scores + user score - if user score is at top - it would be just top scores
 	async getRankingForScore (req, res) {
 		try {
+			const user = checkGetParam(req, 'user')
 			const userScore = checkGetParam(req, 'score')
 
-			await this.handleUserScore({ req, res, userScore })
+			await this.handleUserScore({ req, res, user, userScore })
 
 		} catch (exp) {
 			sendResponseError({ res, error: exp.message})
@@ -61,7 +62,7 @@ module.exports = class ScoreController {
 
 			await ScoreRepo.addScore({ user, score: userScore })
 
-			await this.handleUserScore({ req, res, userScore })
+			await this.handleUserScore({ req, res, user, userScore })
 
 		} catch (exp) {
 			sendResponseError({ res, error: exp.message })
@@ -74,8 +75,8 @@ module.exports = class ScoreController {
 	//
 	//
 
-	async handleUserScore ({ req, res, userScore }) {
-		const score = await ScoreRepo.userScore(userScore)
+	async handleUserScore ({ req, res, user, userScore }) {
+		const score = await ScoreRepo.userScore({ user, userScore} )
 		const ranking = await ScoreRepo.topScores()
 
 		ranking[ranking.length - 1] = score
@@ -104,7 +105,7 @@ function sendResponseError({ res, error }) {
 
 function checkGetParam (req, param) {
 	if (!req.query[param]) {
-		throw new Error(param)
+		throw new Error(`missing param: ${param}`)
 	}
 
 	return req.query[param]
@@ -114,7 +115,7 @@ function checkGetParam (req, param) {
 
 function checkPostParam (req, param) {
 	if (!req.body[param]) {
-		throw new Error(param)
+		throw new Error(`missing param: ${param}`)
 	}
 
 	return req.body[param]
