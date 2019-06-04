@@ -78,10 +78,7 @@ module.exports = class ScoreController {
 		const score = await ScoreRepo.userScore(userScore)
 		const ranking = await ScoreRepo.topScores()
 
-		// add user's score if it's not in top
-		if (score.ranking > ranking.length) {
-			ranking.push(score)
-		}
+		ranking[ranking.length - 1] = score
 
 		sendResponse({ res, data: { ranking } })
 	}
