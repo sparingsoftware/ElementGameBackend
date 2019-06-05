@@ -27,24 +27,14 @@ app.use(bodyParser.json())
 
 // - - - - - - - - - - - - -
 
-app.listen(PORT, () => {
-	console.log(`Server is now running on port ${PORT}`)
-})
+db.connect()
+	.then(()=>{
+		app.listen(PORT, () => {
+			console.log(`Server is now running on port ${PORT}`)
+		})
 
-// db.init()
-
-router.start()
-
-// db.connect()
-// 	.then(()=>{
-// 		app.listen(PORT, () => {
-// 			console.log(`Server is now running on port ${PORT}`)
-// 		})
-//
-// 		// db.init()
-//
-// 		router.start()
-// 	})
-// 	.catch((err)=>{
-// 		console.error('DB CONNECT ERROR = ', err)
-// 	})
+		router.start()
+	})
+	.catch((err)=>{
+		console.error('DB CONNECT ERROR = ', err)
+	})

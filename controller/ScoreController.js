@@ -25,7 +25,8 @@ module.exports = class ScoreController {
 	getRankingForAllUsers (req, res) {
 		ScoreRepo.topScores()
 			.then((results) => {
-				sendResponse({ res, data: { ranking: results } })
+				const ranking = results.map((result, index) => { return { ...result, ranking: index+1 } })
+				sendResponse({ res, data: { ranking } })
 			})
 			.catch((err) => {
 				console.error(`getRankingForAllUsers: ${err}`)
@@ -35,12 +36,11 @@ module.exports = class ScoreController {
 	}
 
 	// return top scores + user score - if user score is at top - it would be just top scores
-	async getRankingForScore (req, res) {
+	async getRankingForUser (req, res) {
 		try {
 			const user = checkGetParam(req, 'user')
-			const userScore = checkGetParam(req, 'score')
 
-			await this.handleUserScore({ req, res, user, userScore })
+			await this.handleUserScore({ req, res, user })
 
 		} catch (exp) {
 			sendResponseError({ res, error: exp.message})
@@ -58,11 +58,11 @@ module.exports = class ScoreController {
 	async addScore (req, res) {
 		try {
 			const user = checkPostParam(req, 'user')
-			const userScore = checkPostParam(req, 'score')
+			const userScore = parseInt(checkPostParam(req, 'score'))
 
 			await ScoreRepo.addScore({ user, score: userScore })
 
-			await this.handleUserScore({ req, res, user, userScore })
+			await this.handleUserScore({ req, res, user })
 
 		} catch (exp) {
 			sendResponseError({ res, error: exp.message })
@@ -75,11 +75,21 @@ module.exports = class ScoreController {
 	//
 	//
 
-	async handleUserScore ({ req, res, user, userScore }) {
-		const score = await ScoreRepo.userScore({ user, userScore} )
-		const ranking = await ScoreRepo.topScores()
+	async handleUserScore ({ req, res, user }) {
+		const score = await ScoreRepo.userScore({ user }) // get user score
+		const topScores = await ScoreRepo.topScores()
 
-		ranking[ranking.length - 1] = score
+		const ranking = topScores.map((result, index) => { return { ...result, ranking: index+1 } })
+
+		if (!score) { // no score for this user
+			sendResponse({ res, data: { ranking } })
+		}
+
+		if (ranking.length == 0) {
+			ranking.push(score)
+		} else if (score.ranking >= ranking.length) {
+			ranking[ranking.length - 1] = score
+		}
 
 		sendResponse({ res, data: { ranking } })
 	}

@@ -34,15 +34,6 @@ class DB {
 		}
 	}
 
-	init () {
-		this.mongoDb.createCollection("users", (err, res) => {
-  			if (err) {
-				console.error('DB ERROR = ', err);
-			}
-
-  			console.log('DB USERS CREATED')
-		})
-	}
 
 	//
 

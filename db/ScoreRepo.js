@@ -10,67 +10,40 @@ class ScoreRepo {
 	}
 
 	static get collection () {
-		return this.db.collection('users')
+		return this.db.collection('scores')
 	}
 
 	//
 
-	static addScore (score = { user: '', score: 0 }) {
-		return this.collection.insertOne(user)
+	static addScore ({ user, score }) {
+		return this.collection.updateOne(
+			{ user },
+			{ $max: { user, score } }, // insert only bigger value than existing
+			{ upsert: true } // create if not exists
+		)
 	}
 
-	static topScores (num=10) {
-		return new Promise((resolve, reject) => {
-			const ranking = [
-				{
-					user: 'Michal',
-					score: '1234',
-					ranking: '1'
-				},
-				{
-					user: 'Kuba',
-					score: '1009',
-					ranking: '2'
-				},
-				{
-					user: 'Jan',
-					score: '999',
-					ranking: '3'
-				},
-				{
-					user: 'Mis',
-					score: '650',
-					ranking: '4'
-				},
-				{
-					user: 'Ania',
-					score: '567',
-					ranking: '5'
-				}
-			]
-
-			resolve(ranking)
-		})
+	static topScores (num=5) {
+		return this.collection
+			.find({})
+			.project({ user: 1, score: 1, _id: 0 })
+			.sort({ score: -1 })
+			.limit(num)
+			.toArray()
 	}
 
 	//
 
-	static userScore ({ user, userScore=370 }) {
-		return new Promise((resolve, reject) => {
-			const score = {
-				user: user,
-				score: userScore,
-				ranking: '9'
-			}
+	static async userScore ({ user }) {
+		const score = await this.collection.findOne({ user })
 
-			resolve(score)
-		})
-	}
+		const ranking = await this.collection.find({ score: { $gt: score.score }}).count() + 1
 
-	static addScore ({ user = '', score = 370 }) {
-		return new Promise((resolve, reject) => {
-			resolve()
-		})
+		return {
+			score: score.score,
+			user: user,
+			ranking: ranking
+		}
 	}
 
 }
