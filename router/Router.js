@@ -22,6 +22,9 @@ class Router {
 		// GET /ranking_all
 		this.app.get('/ranking_all', (...args) => this.scoreController.getRankingForAllUsers(...args))
 
+		// GET /validate_user?user=XYZ
+		this.app.get('/validate_user', (...args) => this.scoreController.validateUser(...args))
+
 		// GET /ranking_user?user=XYZ
 		this.app.get('/ranking_user', (...args) => this.scoreController.getRankingForUser(...args))
 

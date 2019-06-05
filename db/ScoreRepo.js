@@ -23,6 +23,8 @@ class ScoreRepo {
 		)
 	}
 
+	//
+
 	static topScores (num=5) {
 		return this.collection
 			.find({})
@@ -30,6 +32,14 @@ class ScoreRepo {
 			.sort({ score: -1 })
 			.limit(num)
 			.toArray()
+	}
+
+	//
+
+	static userExists ({ user }) {
+		return this.collection
+			.find({ user })
+			.count()
 	}
 
 	//

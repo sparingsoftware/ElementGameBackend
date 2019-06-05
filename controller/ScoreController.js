@@ -47,6 +47,19 @@ module.exports = class ScoreController {
 		}
 	}
 
+	// return top scores + user score - if user score is at top - it would be just top scores
+	async validateUser (req, res) {
+		try {
+			const user = checkGetParam(req, 'user')
+
+			const userExists = await ScoreRepo.userExists({ user })
+
+			sendResponse({ res, data: { user_exists: userExists === 1 } })
+
+		} catch (exp) {
+			sendResponseError({ res, error: exp.message})
+		}
+	}
 
 	//
 	// POST
