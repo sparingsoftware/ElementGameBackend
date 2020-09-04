@@ -18,7 +18,7 @@
     "express": "^4.14.0",
     "log-timestamp": "latest",
     "moment": "^2.22.2",
-    "mongodb": "^3.1.10",
+    "mongodb": "^3.1.13",
     "request": "^2.74.0",
     "vhost": "^3.0.2"
   },
