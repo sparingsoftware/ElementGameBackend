@@ -15,7 +15,7 @@
     "body-parser": "^1.15.2",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",
-    "express": "^4.14.0",
+    "express": "^4.17.3",
     "log-timestamp": "latest",
     "moment": "^2.22.2",
     "mongodb": "^3.1.10",
